@@ -1,0 +1,35 @@
+#!/bin/bash
+app=btsync_docker
+set -e
+
+# Retrieve arguments
+domain=$1
+path=$2
+is_public=$3
+
+path=${path%/}
+# Check domain/path availability
+sudo yunohost app checkurl $domain$path -a $app \
+	|| (echo "Path not available: $domain$path" && exit 1)
+
+# Add the redirection
+sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
+sudo yunohost app setting $app domain -v "$domain"
+sudo yunohost app setting $app path -v "$path"
+
+# Copy nginx conf file
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+
+# Escape uris
+sudo yunohost app setting $app is_public -v "$is_public"
+if [ "$is_public" = "Yes" ];
+then
+	sudo yunohost app setting $app skipped_uris -v "/"
+fi
+
+#Build docker container
+python build_container.py
+
+# Reload
+sudo service nginx reload
+sudo yunohost app ssowatconf

@@ -1,0 +1,10 @@
+#!/bin/bash
+app=btsync_docker
+
+# Remove NGINX conf
+domain=$(sudo yunohost app setting $app domain)
+sudo rm /etc/nginx/conf.d/$domain.d/$app.conf
+
+# Reload
+sudo service nginx reload
+sudo yunohost app ssowatconf 
