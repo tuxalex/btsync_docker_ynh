@@ -3,41 +3,44 @@
     "id": "btsync_docker",
     "description": {
         "en": "Build btsync app inside docker container for yunohost",
-        "fr": "Construit l'application btsync à l'intérieur d'un conteneur docker pour yunohost",
+        "fr": "Construit l'application btsync à l'intérieur d'un conteneur docker pour yunohost"
     },
     "developer": {
-        "name": "tuxalex",
+        "name": "tuxalex"
     },
     "multi_instance": "false",
     "arguments": {
-        "install" : [
+        "install": [
             {
                 "name": "domain",
                 "type": "domain",
                 "ask": {
                     "en": "Chooze your domain",
-                    "fr": "Choisissez votre domaine",
+                    "fr": "Choisissez votre domaine"
                 },
-                "example": "domain.org",
+                "example": "domain.org"
             },
             {
                 "name": "path",
                 "type": "path",
                 "ask": {
                     "en": "Choose a path",
-                    "fr": "Choisissez un chemin",
+                    "fr": "Choisissez un chemin"
                 },
-		"default": "/btsync",
-                "example": "/path",
+                "default": "/btsync",
+                "example": "/path"
             },
-	    {
+            {
                 "name": "is_public",
                 "ask": {
                     "en": "Is it a public redirection ?",
-                    "fr": "Est-ce une redirection publique ?",
+                    "fr": "Est-ce une redirection publique ?"
                 },
-                "choices": ["Yes", "No"],
-                "default": "No",
+                "choices": [
+                    "Yes",
+                    "No"
+                ],
+                "default": "No"
             }
         ]
     }
