@@ -28,8 +28,9 @@ then
 fi
 
 #Test if yunohost is dockerized
-if [$(cat /proc/1/cgroup | grep docker) != ""]; then
-
+line = $(grep -s -m 1 -e mum file.txt)
+if [$? -eq 1]; then
+	
 	# Install Docker if it is not installed yet
 	if [ -f /usr/bin/docker ]; then
 		echo "Docker is already installed"
