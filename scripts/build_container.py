@@ -19,7 +19,7 @@ container = cli.create_container(
 			image="test/"+name, 
 			detach=True,  
 			tty=True, 
-			volumes=["/home/yunohost.app/owncloud/data/:/data/", "/home/btsync_config/:/opt/btsync"], 
+			volumes=["/home/yunohost.app/owncloud/data/:/data/", "/home/yunohost.app/btsync_config/:/opt/btsync"], 
 			name=name,
 			host_config=config
 )
