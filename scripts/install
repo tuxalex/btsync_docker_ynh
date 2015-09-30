@@ -27,8 +27,38 @@ then
 	sudo yunohost app setting $app skipped_uris -v "/"
 fi
 
+#Test if yunohost is dockerized
+if [cat /proc/1/cgroup | grep docker != ""]; then
+
+	# Install Docker if it is not installed yet
+	if [ -f /usr/bin/docker ]; then
+		echo "Docker is already installed"
+	else
+		echo "Docker will now be installed"
+		sudo apt-get install curl -y -qq
+		sudo curl -sSL https://get.docker.com/ | sh
+		sudo yunohost service add docker
+		sudo update-rc.d docker defaults
+		sudo service docker start 
+		sudo usermod -aG docker admin
+		newgrp docker
+	fi
+	sudo service docker restart
+fi
+
+#Install pip if it is not installed yet
+if [ -f /usr/bin/pip ]; then
+		echo "pip installer is already installed"
+	else
+		echo "pip installer will now be installed"
+		sudo apt-get install python-pip
+fi
+
 #Build docker container
-python build_container.py
+echo "Install or upgrade docker-py"
+sudo pip install docker-py --upgrade
+echo "Start building container..."
+sudo python build_container.py
 
 # Reload
 sudo service nginx reload
