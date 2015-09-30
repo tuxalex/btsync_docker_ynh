@@ -3,10 +3,10 @@
     "id": "btsync_docker",
     "description": {
         "en": "Build btsync app inside docker container for yunohost",
-        "fr": "Construit l'application btsync à l'intérieur d'un conteneur docker pour yunohost"
+        "fr": "Construit l'application btsync à l'intérieur d'un conteneur docker pour yunohost",
     },
     "developer": {
-        "name": "tuxalex"
+        "name": "tuxalex",
     },
     "multi_instance": "false",
     "arguments": {
@@ -30,7 +30,7 @@
 		"default": "/btsync"
                 "example": "/path"
             },
-			{
+	    {
                 "name": "is_public",
                 "ask": {
                     "en": "Is it a public redirection ?",
