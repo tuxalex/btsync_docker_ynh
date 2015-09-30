@@ -5,7 +5,7 @@ import json
 from docker import Client
 
 name='btsync'
-cli = Client(base_url='unix://var/run/docker.sock')
+cli = Client(base_url='unix://docker.sock')
 config=cli.create_host_config(port_bindings={
         			8888: 8888,
         			5555: 5555
