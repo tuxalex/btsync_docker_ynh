@@ -28,8 +28,7 @@ then
 fi
 
 #Test if yunohost is dockerized
-line = $(grep -s -m 1 -e docker /proc/1/cgroup)
-if [$? -eq 1]; then
+if ["$(grep -c docker /proc/1/cgroup)" -eq 0]; then
 	
 	# Install Docker if it is not installed yet
 	if [ -f /usr/bin/docker ]; then
@@ -37,8 +36,9 @@ if [$? -eq 1]; then
 	else
 		echo "Docker will now be installed"
 		sudo apt-get install curl -y -qq
-		sudo curl -sSL https://get.docker.com/ | sh
-		sudo yunohost service add docker
+		curl -sSL https://get.docker.com/gpg | sudo apt-key add -
+		curl -sSL https://get.docker.com/ | sh	
+	 	sudo yunohost service add docker
 		sudo update-rc.d docker defaults
 		sudo service docker start 
 		sudo usermod -aG docker admin
