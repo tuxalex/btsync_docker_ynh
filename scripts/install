@@ -29,7 +29,7 @@ fi
 
 #Test if yunohost is dockerized
 cat /proc/1/cgroup | grep -q docker
-if [$? -eq 1]; then
+if [ $? -lt 0 ]; then
 	
 	# Install Docker if it is not installed yet
 	if [ -f /usr/bin/docker ]; then
