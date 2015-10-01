@@ -26,8 +26,8 @@ container = cli.create_container(
 
 
 print(container)		
-out = cli.start(container=name) 
-print(out)
+cli.start(container=name)
+print(cli.containers())
 	
 exit()
 
