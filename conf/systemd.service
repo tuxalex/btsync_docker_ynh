@@ -1,0 +1,11 @@
+[Unit]
+Description=Container BTSync 
+Requires=docker.service
+After=docker.service
+
+[Service]
+ExecStart=-/usr/bin/docker start btsync
+ExecStop=/usr/bin/docker stop btsync
+
+[Install]
+WantedBy=multi-user.target

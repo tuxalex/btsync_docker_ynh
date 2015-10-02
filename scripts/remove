@@ -7,6 +7,7 @@ sudo rm /etc/nginx/conf.d/$domain.d/$app.conf
 
 # Remove container
 sudo python remove_container.py
+sudo rm -rf /home/yunohost.docker/container-$app
 
 # Reload
 sudo service nginx reload
