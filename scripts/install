@@ -7,7 +7,7 @@ domain=$1
 path=$2
 is_public=$3
 
-ports=[8888, 5555]
+ports=(8888 5555)
 
 # Check ports are available  
 for p in $ports
@@ -66,13 +66,23 @@ sudo pip install docker-py --upgrade
 echo "Start building container..."
 sudo python build_container.py
 
-# Manage container as daemon with systemd - only compatible with Debian Jessie & YNH 2.2
-sudo sed -i "s@CONTAINERNAME@$app@g" ../conf/systemd.service
-sudo cp ../conf/systemd.service /etc/systemd/system/container-$app.service
-sudo chmod 777 /etc/systemd/system/container-$app.service
-sudo systemctl enable /etc/systemd/system/container-$app.service
-sudo systemctl daemon-reload
+#Create init script for the container
+if [ -f /bin/systemd ]; then
+	#Manage container as daemon with systemd - only compatible with Debian Jessie & YNH 2.2
+	sudo sed -i "s@CONTAINERNAME@$app@g" ../conf/systemd.service
+	sudo cp ../conf/systemd.service /etc/systemd/system/container-$app.service
+	sudo chmod 777 /etc/systemd/system/container-$app.service
+	sudo systemctl enable /etc/systemd/system/container-$app.service
+	sudo systemctl daemon-reload
+else
+	sudo sed -i "s@CONTAINERNAME@$app@g" ../conf/sysv.sh
+	sudo cp ../conf/systemd.service /etc/init.d/$app
+	sudo chmod 777 /etc/init.d/$app
+	sudo update-rc.d $app defaults
+fi
 sudo yunohost service add container-$app
+
+
 
 # Add the redirection
 sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
