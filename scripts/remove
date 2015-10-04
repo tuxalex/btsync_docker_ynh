@@ -8,7 +8,7 @@ containername=$app'_'$username
 sudo rm /etc/nginx/conf.d/$domain.d/$containername.conf
 
 # Remove container
-sudo python remove_container.py $username
+sudo python remove_container.py $app $username
 sudo rm -rf /home/yunohost.docker/container-$app/config
 
 # Reload
