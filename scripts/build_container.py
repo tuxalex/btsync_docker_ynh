@@ -22,7 +22,9 @@ cli = Client(base_url='unix://docker.sock')
 config=cli.create_host_config(port_bindings={
         			8888: 8888,
         			5555: 5555
-    	})
+    			      },
+			      link=('yunohost', containername)
+)
 
 #Build docker image with the Dockerfile and disply the output
 for line in cli.build(path='../build/', rm=True, tag=imagename):
