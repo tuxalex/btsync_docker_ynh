@@ -23,7 +23,7 @@ config=cli.create_host_config(port_bindings={
         			8888: 8888,
         			5555: 5555
     			      },
-			      link=('yunohost', containername)
+			      link={hostname: containername}
 )
 
 #Build docker image with the Dockerfile and disply the output
