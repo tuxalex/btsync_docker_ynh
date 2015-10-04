@@ -49,6 +49,18 @@
                     "fr": "Installer pour quel utilisateur ?"
                 },
                 "example": "johndoe"
+            },
+	    {
+                "name": "owncloud",
+                "ask": {
+                    "en": "Use the owncloud user data directory ?",
+                    "fr": "Utiliser le dossier des données de l'utilisateur associé à owncloud ?"
+                },
+                "choices": [
+                    "Yes",
+                    "No"
+                ],
+                "default": "No"
             }
         ]
     }

@@ -72,12 +72,12 @@ fi
 
 #Install or upgrade docker-py
 echo "Install or upgrade docker-py"
-sudo mkdir -p /home/yunohost.docker/container-$app/
-sudo mkdir -p /home/yunohost.docker/container-$app/config/
+sudo mkdir -p /home/yunohost.docker/container-$app/$username
+sudo mkdir -p /home/yunohost.docker/container-$app/$username/config/
+sudo mkdir -p /home/yunohost.docker/container-$app/$username/data/
 sudo pip install docker-py --upgrade
 
 #Owncloud support or not
-$datapath="/home/yunohost.docker/container-$app/$username/data"
 if [ "$owncloud" = "Yes" ];
 then
 	for i in $(ls /home/yunohost.app/owncloud/data/)
@@ -85,12 +85,12 @@ then
 		sudo yunohost user list --json | grep -q "\"username\": \"$i\""
 		if [[ $? -eq 0 ]];
 		then
-			$datapath="/home/yunohost.app/owncloud/data/$username/files"
+			datapath='/home/yunohost.app/owncloud/data/'$username'/files/'
 		fi
-	done
+	done	
 else
-	sudo mkdir -p /home/yunohost.docker/container-$app/data/
-	
+
+	datapath='/home/yunohost.docker/container-'$app'/'$username'/data/'
 fi
 
 
