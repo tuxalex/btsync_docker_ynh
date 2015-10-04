@@ -1,5 +1,5 @@
 #!/bin/bash
-app=btsync_docker
+app=btsync-docker
 set -e
 
 # Retrieve arguments
@@ -9,7 +9,7 @@ is_public=$3
 username=$4
 owncloud=$5
 
-containername=$app'_'$username
+containername=$app'-'$username
 ports=(8888 5555)
 
 # Check if user is available

@@ -9,7 +9,7 @@ from docker import Client
 app=sys.argv[1]
 username=sys.argv[2]
 datapath=sys.argv[3]
-containername=app+'_'+username
+containername=app+'-'+username
 
 #Get the hostname
 hostname = socket.gethostname()
@@ -23,7 +23,7 @@ config=cli.create_host_config(port_bindings={
         			8888: 8888,
         			5555: 5555
     			      },
-			      link={hostname: containername}
+			      links={hostname: containername}
 )
 
 #Build docker image with the Dockerfile and disply the output
