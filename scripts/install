@@ -9,7 +9,7 @@ is_public=$3
 username=$4
 owncloud=$5
 
-conteinername=$app'_'$username
+containername=$app'_'$username
 ports=(8888 5555)
 
 # Check if user is available
@@ -102,26 +102,26 @@ sudo python build_container.py $app $username $datapath
 #Create init script for the container
 if [ -f /bin/systemd ]; then
 	#Manage container as daemon with systemd - only compatible with Debian Jessie & YNH 2.2
-	sudo sed -i "s@CONTAINERNAME@$conteinername@g" ../conf/systemd.service
-	sudo cp ../conf/systemd.service /etc/systemd/system/container-$conteinername.service
-	sudo chmod 777 /etc/systemd/system/container-$conteinername.service
-	sudo systemctl enable /etc/systemd/system/container-$conteinername.service
+	sudo sed -i "s@CONTAINERNAME@$containername@g" ../conf/systemd.service
+	sudo cp ../conf/systemd.service /etc/systemd/system/container-$containername.service
+	sudo chmod 777 /etc/systemd/system/container-$containername.service
+	sudo systemctl enable /etc/systemd/system/container-$containername.service
 	sudo systemctl daemon-reload
 else
 	#Manage container as daemon with sysV
-	sudo sed -i "s@CONTAINERNAME@$conteinername@g" ../conf/sysv.sh
-	sudo cp ../conf/systemd.service /etc/init.d/$conteinername
-	sudo chmod 777 /etc/init.d/$conteinername
-	sudo update-rc.d $conteinername defaults
+	sudo sed -i "s@CONTAINERNAME@$containername@g" ../conf/sysv.sh
+	sudo cp ../conf/sysv.sh /etc/init.d/$containername
+	sudo chmod 777 /etc/init.d/$containername
+	sudo update-rc.d $containername defaults
 fi
-sudo yunohost service add container-$conteinername
+sudo yunohost service add container-$containername
 
 
 
 # Add the redirection
 #sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
 sudo sed -i "s@USERNAME@$username@g" /etc/nginx/conf.d/$domain.d/btsync$username.conf
-sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$conteinername.conf
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$containername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
 sudo yunohost app setting $app path -v "$path"
