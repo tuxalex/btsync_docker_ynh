@@ -13,13 +13,12 @@ conteinername=$app'_'$username
 ports=(8888 5555)
 
 # Check if user is available
-for u in $(ls /home)
-do
-	sudo yunohost user list --json | grep -q "\"username\": \"$u\""
-	if [[ ! $? -eq 0 ]]; then
-  		exit 1
-	fi
-done
+
+sudo yunohost user list --json | grep -q "\"username\": \"$username\""
+if [[ ! $? -eq 0 ]]; then
+  	exit 1
+fi
+
 
 
 # Check ports are available  
@@ -31,10 +30,9 @@ do
 	fi
 done
 
-
 # Remove trailing "/" for next commands and add user name path
 path=${path%/}
-path=$path"/"$username
+path=$path$username
 
 # Check domain/path availability
 domain=${domain%/}
@@ -121,7 +119,8 @@ sudo yunohost service add container-$conteinername
 
 
 # Add the redirection
-sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
+#sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
+sudo sed -i "s@USERNAME@$username@g" /etc/nginx/conf.d/$domain.d/btsync$username.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$conteinername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
