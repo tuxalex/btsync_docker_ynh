@@ -2,22 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import socket
+import sys
 from docker import Client
 
-name='btsync'
+app=sys.argv[1]
+username=sys.argv[2]
+containername=app+'_'+username
 
 #Get the hostname
 hostname = socket.gethostname()
-imagename = hostname+'/'+name
+imagename = hostname+'/'+app
 
 #Connect to docker socket
 cli = Client(base_url='unix://docker.sock')
 
 #Stop and remove container
 print("Stop container")
-cli.stop(container=name)
+cli.stop(container=containername)
 print("Remove container")
-cli.remove_container(container=name, force=True)
+cli.remove_container(container=containername, force=True)
 
 #Remove docker image
 print("Remove image...")

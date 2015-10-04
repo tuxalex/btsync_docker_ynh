@@ -3,13 +3,17 @@
 
 import json
 import socket
+import sys
 from docker import Client
 
-name='btsync'
+app=sys.argv[1]
+username=sys.argv[2]
+datapath=sys.argv[3]
+containername=app+'_'+username
 
 #Get the hostname
 hostname = socket.gethostname()
-imagename = hostname+'/'+name
+imagename = hostname+'/'+app
 
 #Connect to docker socket
 cli = Client(base_url='unix://docker.sock')
@@ -26,23 +30,23 @@ for line in cli.build(path='../build/', rm=True, tag=imagename):
 	print(out['stream'])
 
 
-#Force stop and remove container with the same name
-cli.stop(container=name)
-cli.remove_container(container=name, force=True)
+# TODO: Force stop and remove container with the same name
+#cli.stop(container=containername)
+#cli.remove_container(container=containername, force=True)
 
 #Create the container and display result
 container = cli.create_container(
 			image=imagename, 
 			detach=True,  
 			tty=True, 
-			volumes=["/home/yunohost.app/owncloud/data/:/data/", "/home/yunohost.docker/btsync/:/opt/btsync"], 
-			name=name,
+			volumes=[datapath+":/data", "/home/yunohost.docker/"+app+"/"+username+"/config:/opt/btsync"], 
+			name=containername,
 			host_config=config
 )
 print(container)		
 
 #Start the container and display result
-cli.start(container=name)
+cli.start(container=containername)
 print(cli.containers())
 	
 exit()

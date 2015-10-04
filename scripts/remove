@@ -2,12 +2,14 @@
 app=btsync_docker
 
 # Remove NGINX conf
+username=$(sudo yunohost app setting $app user)
 domain=$(sudo yunohost app setting $app domain)
-sudo rm /etc/nginx/conf.d/$domain.d/$app.conf
+conteinername=$app'_'$username
+sudo rm /etc/nginx/conf.d/$domain.d/$conteinername.conf
 
 # Remove container
-sudo python remove_container.py
-sudo rm -rf /home/yunohost.docker/container-$app
+sudo python remove_container.py $username
+sudo rm -rf /home/yunohost.docker/container-$app/config
 
 # Reload
 sudo service nginx reload
