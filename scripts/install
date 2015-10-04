@@ -120,9 +120,9 @@ sudo yunohost service add container-$containername
 
 # Add the redirection
 #sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
-upperusername=$($username| sed 's/.*/\U&/')
+uppercontainername=$($containername| sed 's/.*/\U&/')
 sudo sed -i "s@USERNAME@$username@g" ../conf/nginx.conf
-sudo sed -i "s@CONTAINERNAME@$containername@g" ../conf/nginx.conf
+sudo sed -i "s@CONTAINERNAME@$uppercontainername@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$containername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
