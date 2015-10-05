@@ -19,12 +19,7 @@ imagename = hostname+'/'+app
 cli = Client(base_url='unix://docker.sock')
 
 #Define port binding
-config=cli.create_host_config(port_bindings={
-        			8888: 8888,
-        			5555: 5555
-    			      },
-			      links={hostname: containername}
-)
+config=cli.create_host_config(port_bindings={8888: 8888, 5555: 5555})
 
 #Build docker image with the Dockerfile and disply the output
 for line in cli.build(path='../build/', rm=True, tag=imagename):
@@ -50,6 +45,9 @@ print(container)
 #Start the container and display result
 cli.start(container=containername)
 print(cli.containers())
+
+details=cli.inspect_container(container=containername)
+return details['NetworkSettings']['IPAddress']
 	
 exit()
 

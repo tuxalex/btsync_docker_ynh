@@ -33,7 +33,7 @@ done
 # Remove trailing "/" for next commands and add user name path
 path=${path%/}
 path=$path$username
-containername=$path'-'$username
+containername=${path#/}
 
 # Check domain/path availability
 domain=${domain%/}
@@ -98,7 +98,7 @@ fi
 
 #Create Docker container via python script
 echo "Start building container..."
-sudo python build_container.py $app $username $datapath $containername
+ip = sudo python build_container.py $app $username $datapath $containername
 
 #Create init script for the container
 if [ -f /bin/systemd ]; then
@@ -123,7 +123,7 @@ sudo yunohost service add container-$containername
 #sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
 uppercontainername=$(echo $containername| sed 's/.*/\U&/')
 sudo sed -i "s@USERNAME@$username@g" ../conf/nginx.conf
-sudo sed -i "s@CONTAINERNAME@$uppercontainername@g" ../conf/nginx.conf
+sudo sed -i "s@CONTAINERNAME@$ip@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$containername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
