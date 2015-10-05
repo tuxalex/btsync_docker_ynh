@@ -47,7 +47,7 @@ cli.start(container=containername)
 print(cli.containers())
 
 details=cli.inspect_container(container=containername)
-return details['NetworkSettings']['IPAddress']
+print(details['NetworkSettings']['IPAddress'])
 	
 exit()
 
