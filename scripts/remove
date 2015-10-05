@@ -1,5 +1,5 @@
 #!/bin/bash
-app=btsync-docker
+app=btsync_docker
 
 # Remove NGINX conf
 path=$(sudo yunohost app setting $path path)

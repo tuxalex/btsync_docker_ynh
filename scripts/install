@@ -99,7 +99,7 @@ fi
 #Create Docker container via python script
 echo "Start building container..."
 ip=$(sudo python build_container.py $app $username $datapath $containername)
-ip=$($ip | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
+ip=$(echo $ip | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
 
 #Create init script for the container
 if [ -f /bin/systemd ]; then
