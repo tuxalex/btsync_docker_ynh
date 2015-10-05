@@ -15,16 +15,19 @@ imagename = hostname+'/'+app
 #Connect to docker socket
 cli = Client(base_url='unix://docker.sock')
 
+print("Start remove container")
+details=cli.inspect_container(container=containername)
+#First print IP, then print redirect port, finaly print not redirect ports
+print(","+details['NetworkSettings']['IPAddress']
+      +","+details['NetworkSettings']['Ports']['8888/tcp'][0]['HostPort']
+      +","+details['NetworkSettings']['Ports']['55555/tcp'][0]['HostPort'])
+
 #Stop and remove container
-print("Stop container")
 cli.stop(container=containername)
-print("Remove container")
 cli.remove_container(container=containername, force=True)
 
 #Remove docker image
-print("Remove image...")
 cli.remove_image(image=imagename, force=True)
-print("Container fully remove")
 
 exit()
 

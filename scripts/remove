@@ -10,7 +10,9 @@ containername=${path#/}
 sudo rm /etc/nginx/conf.d/$domain.d/$containername.conf
 
 # Remove container
-sudo python remove_container.py $app $containername
+output=$(sudo python remove_container.py $app $containername)
+notredirectport=$(echo $output | cut -f4 -d,)
+sudo yunohost firewall disallow TCP $notredirectport
 sudo rm -rf /home/yunohost.docker/container-$app/config
 
 # Reload

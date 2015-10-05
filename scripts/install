@@ -69,10 +69,11 @@ fi
 
 #Install or upgrade docker-py
 echo "Install or upgrade docker-py"
+sudo pip install docker-py --upgrade
+
 sudo mkdir -p /home/yunohost.docker/container-$app/$username
 sudo mkdir -p /home/yunohost.docker/container-$app/$username/config/
 sudo mkdir -p /home/yunohost.docker/container-$app/$username/data/
-sudo pip install docker-py --upgrade
 
 #Owncloud support or not
 if [ "$owncloud" = "Yes" ];
@@ -94,14 +95,13 @@ fi
 
 #Create Docker container via python script
 echo "Start building container..."
-network=$(sudo python build_container.py $app $username $datapath $containername)
+output=$(sudo python build_container.py $app $username $datapath $containername)
 
 #Get info of container network (ip and external ports)
-ip=$(echo $network | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
-IFS=',' read -a netparam <<< "$network"
-portsbinding=("${netparam[@]:1}") # remove first element because it's the ip
-redirectport=${portsbinding[0]}
-notredirectport=${portsbinding[1]}
+ip=$(echo $output | cut -f2 -d,)
+#ip=$(echo $ip | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
+redirectport=$(echo $output | cut -f3 -d,)
+notredirectport=$(echo $output | cut -f4 -d,)
 
 
 #Create init script for the container
