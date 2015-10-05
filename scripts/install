@@ -1,5 +1,5 @@
 #!/bin/bash
-app=btsync-docker
+app=btsyncDocker
 set -e
 
 # Retrieve arguments
