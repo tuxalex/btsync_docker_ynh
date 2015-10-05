@@ -9,7 +9,7 @@ from docker import Client
 app=sys.argv[1]
 username=sys.argv[2]
 datapath=sys.argv[3]
-containername=app+'-'+username
+containername=sys.argv[4]
 
 #Get the hostname
 hostname = socket.gethostname()

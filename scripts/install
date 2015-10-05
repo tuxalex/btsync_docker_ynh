@@ -1,5 +1,5 @@
 #!/bin/bash
-app=btsyncDocker
+app=btsync_docker
 set -e
 
 # Retrieve arguments
@@ -9,7 +9,7 @@ is_public=$3
 username=$4
 owncloud=$5
 
-containername=$app'-'$username
+#containername=$app'-'$username
 ports=(8888 5555)
 
 # Check if user is available
@@ -33,6 +33,7 @@ done
 # Remove trailing "/" for next commands and add user name path
 path=${path%/}
 path=$path$username
+containername=$path'-'$username
 
 # Check domain/path availability
 domain=${domain%/}
@@ -97,7 +98,7 @@ fi
 
 #Create Docker container via python script
 echo "Start building container..."
-sudo python build_container.py $app $username $datapath
+sudo python build_container.py $app $username $datapath $containername
 
 #Create init script for the container
 if [ -f /bin/systemd ]; then
