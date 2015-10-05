@@ -19,7 +19,7 @@ cli = Client(base_url='unix://docker.sock')
 print("Stop container")
 cli.stop(container=containername)
 print("Remove container")
-cli.remove_container(container=containername, link=True, force=True)
+cli.remove_container(container=containername, force=True)
 
 #Remove docker image
 print("Remove image...")

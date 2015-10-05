@@ -22,7 +22,7 @@ fi
 
 
 # Check ports are available  
-for p in $ports
+for p in ${ports[*]}
 do
 	sudo yunohost app checkport $p
 	if [[ ! $? -eq 0 ]]; then
