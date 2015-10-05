@@ -45,8 +45,11 @@ container = cli.create_container(
 cli.start(container=containername)
 
 details=cli.inspect_container(container=containername)
+#First print IP
 print(details['NetworkSettings']['IPAddress'])
-print(":"+details['HostConfig']['PortBindings']['8888/tcp'][0]['HostPort'])
-print(":"+details['HostConfig']['PortBindings']['55555/tcp'][0]['HostPort'])	
+#Then print redirect port
+print(","+details['NetworkSettings']['Ports']['8888/tcp'][0]['HostPort'])
+#Finaly print not redirect ports
+print(","+details['NetworkSettings']['Ports']['55555/tcp'][0]['HostPort'])	
 exit()
 

@@ -97,8 +97,8 @@ echo "Start building container..."
 network=$(sudo python build_container.py $app $username $datapath $containername)
 
 #Get info of container network (ip and external ports)
-IFS=':' read -a netparam <<< "$network"
-ip=$(echo ${netparam[0]} | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
+ip=$(echo $network | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
+IFS=',' read -a netparam <<< "$network"
 portsbinding=("${netparam[@]:1}") # remove first element because it's the ip
 redirectport=${portsbinding[0]}
 notredirectport=${portsbinding[1]}
