@@ -9,26 +9,22 @@ is_public=$3
 username=$4
 owncloud=$5
 
-#containername=$app'-'$username
-ports=(8888 55555)
+#ports=(8888 55555)
 
 # Check if user is available
-
 sudo yunohost user list --json | grep -q "\"username\": \"$username\""
 if [[ ! $? -eq 0 ]]; then
   	exit 1
 fi
 
-
-
 # Check ports are available  
-for p in ${ports[*]}
-do
-	sudo yunohost app checkport $p
-	if [[ ! $? -eq 0 ]]; then
-  		exit 1
-	fi
-done
+#for p in ${ports[*]}
+#do
+#	sudo yunohost app checkport $ports
+#	if [[ ! $? -eq 0 ]]; then
+#  		exit 1
+#	fi
+#done
 
 # Remove trailing "/" for next commands and add user name path
 path=${path%/}
@@ -98,8 +94,15 @@ fi
 
 #Create Docker container via python script
 echo "Start building container..."
-ip=$(sudo python build_container.py $app $username $datapath $containername)
-ip=$(echo $ip | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
+network=$(sudo python build_container.py $app $username $datapath $containername)
+
+#Get info of container network (ip and external ports)
+IFS=':' read -a netparam <<< "$network"
+ip=$(echo ${netparam[0]} | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
+portsbinding=("${netparam[@]:1}") # remove first element because it's the ip
+redirectport=${portsbinding[0]}
+notredirectport=${portsbinding[1]}
+
 
 #Create init script for the container
 if [ -f /bin/systemd ]; then
@@ -124,10 +127,14 @@ sudo yunohost service add container-$containername
 #sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf)
 sudo sed -i "s@USERNAME@$username@g" ../conf/nginx.conf
 sudo sed -i "s@CONTAINERIP@$ip@g" ../conf/nginx.conf
+sudo sed -i "s@PORT@$redirectport@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$containername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
 sudo yunohost app setting $app path -v "$path"
+
+#Open non redirect port 
+sudo yunohost firewall allow TCP $notredirectport
 
 if [ "$is_public" = "Yes" ];
 then
