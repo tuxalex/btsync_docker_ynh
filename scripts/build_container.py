@@ -19,7 +19,7 @@ imagename = hostname+'/'+app
 cli = Client(base_url='unix://docker.sock')
 
 #Define port binding
-config=cli.create_host_config(port_bindings={8888: 8888, 5555: 5555})
+config=cli.create_host_config(port_bindings={8888: ('127.0.0.1', 8888), 5555: ('127.0.0.1', 5555)})
 
 #Build docker image with the Dockerfile and disply the output
 for line in cli.build(path='../build/', rm=True, tag=imagename):
@@ -39,12 +39,10 @@ container = cli.create_container(
 			volumes=[datapath+":/data", "/home/yunohost.docker/"+app+"/"+username+"/config:/opt/btsync"], 
 			name=containername,
 			host_config=config
-)
-print(container)		
+)		
 
 #Start the container and display result
 cli.start(container=containername)
-print(cli.containers())
 
 details=cli.inspect_container(container=containername)
 print(details['NetworkSettings']['IPAddress'])

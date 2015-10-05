@@ -99,7 +99,7 @@ fi
 #Create Docker container via python script
 echo "Start building container..."
 ip=$(sudo python build_container.py $app $username $datapath $containername)
-#ip=grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}"
+ip=$($ip | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
 
 #Create init script for the container
 if [ -f /bin/systemd ]; then
@@ -121,10 +121,9 @@ sudo yunohost service add container-$containername
 
 
 # Add the redirection
-#sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf
-#uppercontainername=$(echo $containername| sed 's/.*/\U&/')
+#sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf)
 sudo sed -i "s@USERNAME@$username@g" ../conf/nginx.conf
-sudo sed -i "s@CONTAINERNAME@$ip@g" ../conf/nginx.conf
+sudo sed -i "s@CONTAINERIP@$ip@g" ../conf/nginx.conf
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$containername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
