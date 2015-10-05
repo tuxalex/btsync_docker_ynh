@@ -25,13 +25,13 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 case "$1" in
   start)
-	docker start $NAME
+	python -c "from docker import Client; cli = Client(base_url='unix://docker.sock'); cli.start(container='$NAME')"
 	;;
   stop)
-	docker stop $NAME
+	python -c "from docker import Client; cli = Client(base_url='unix://docker.sock'); cli.stop(container='$NAME')"
 	;;
   restart|force-reload)
-	docker restart $NAME
+	python -c "from docker import Client; cli = Client(base_url='unix://docker.sock'); cli.restart(container='$NAME')"
 	;;
   *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
