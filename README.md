@@ -1,16 +1,29 @@
-Redirect for YunoHost 
-----------------------------------------
-Warning: This YunoHost app is still in development. Use it at your own risk!
+BitTorrent Sync for Yunohost.
+============================
 
-This app allows to redirect one path in order to add it as a Yunohost app.
-For example, you can create a YunoHost application "MyApp" at "http://domain.tld/myapp/" which is actually pointing at "http://127.0.0.1:8080/app/". You can even add SSO to protect this application (but make sure that this application CANNOT be accessed by its port).
+BitTorrent Sync by BitTorrent, Inc is a proprietary peer-to-peer file synchronization tool available for Windows, Mac, Linux, Android, iOS, Windows Phone and BSD. It can sync files between devices on a local network, or between remote devices over the Internet via secure, distributed P2P technology.
 
-Usage
------
-The main use of redirect_ynh is to create YunoHost apps out of Docker containers: https://github.com/scith/docker_container_ynh. For example, a container running with the option "-p 127.0.0.1:8080:80" could be redirected to "http://domain.tld/myapp/" with SSO.
+Although not touted by the developers as an intended direct replacement nor competitor to cloud-based file synchronization services, it has attained much of its publicity in this potential role.[2] This is mainly due to the ability of BitTorrent Sync to address many of the concerns in existing services relating to file storage limits, privacy, cost, and performance.
 
-**IMPORTANT:** the redirect.conf file might need to be updated according to your situation!
-**WARNING:** Many apps do not support being redirected to a different path due to relative links! This means that some apps being hosted for example on http://127.0.0.1:5050/app/ HAVE TO be redirected to http://domain.tld/app/ and NOT http://domain.tld/someotherapp/
+Source: Wikipedia
 
-*Concrete example:* the Odoo Docker container runs on http://127.0.0.1:8069/. You will not be able to redirect it to http://domain.tld/odoo/ ! You have to redirect it to the root, so for example http://odoo.domain.tld/
+Licensing
+---------
 
+BitTorrent Sync , unlike the open source frontend, is proprietary software.
+
+Source: Wikipedia
+
+Installation information
+------------------------
+This package installs BitTorrent Sync in a container with docker and use redirection in nginx to add the app in yunohost SSO.
+The install script install docker if yunohost have installed on the host.
+Docker-py has been used as a docker client to interact with docker thus this package can be used on a host with yunohost installed (not tested yet) or on a yunohost docker container.
+The first installation can take time, because docker download the base image and construct the ajenti image, so be patient.
+In yunohost this app will be installed with the name "btsync_docker"
+BitTorrent Sync doesn't support multi-user so this app is multi-instance, each user must have an install of this app to access to it. The first instance installed will be called "btsync_docker", after "__NUMBEROFINSTANCE" will be added to "btsync_docker" (Example: the secondary instance will be called "btsync_docker__2") 
+The package creates for each install a container with a name composed of "btsync" and the username concatened like btsyncUSERNAME. 
+
+Credit
+------
+This work is based on Scith work : https://github.com/scith/redirect_ynh
