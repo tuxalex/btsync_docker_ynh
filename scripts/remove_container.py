@@ -18,9 +18,9 @@ cli = Client(base_url='unix://docker.sock')
 print("Start remove container")
 details=cli.inspect_container(container=containername)
 #First print IP, then print redirect port, finaly print not redirect ports
-print(","+details['NetworkSettings']['IPAddress']
-      +","+details['NetworkSettings']['Ports']['8888/tcp'][0]['HostPort']
-      +","+details['NetworkSettings']['Ports']['55555/tcp'][0]['HostPort'])
+#print(","+details['NetworkSettings']['IPAddress']
+#      +","+details['NetworkSettings']['Ports']['8888/tcp'][0]['HostPort']
+#      +","+details['NetworkSettings']['Ports']['55555/tcp'][0]['HostPort'])
 
 #Stop and remove container
 cli.stop(container=containername)

@@ -17,7 +17,7 @@ sudo cp -aR /etc/btsync/ /opt/
 sudo rm /opt/btsync/start.sh
 sudo chown -R btsync:btsync /etc/btsync
 
-if [[ ! -f "/etc/btsync/btsync.conf" ]]
+if [[ ! -f "/opt/btsync/btsync.conf" ]]
 then
    /opt/btsync/btsync --dump-sample-config > /opt/btsync/btsync.conf
 fi

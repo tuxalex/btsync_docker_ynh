@@ -9,22 +9,11 @@ is_public=$3
 username=$4
 owncloud=$5
 
-#ports=(8888 55555)
-
 # Check if user is available
 sudo yunohost user list --json | grep -q "\"username\": \"$username\""
 if [[ ! $? -eq 0 ]]; then
   	exit 1
 fi
-
-# Check ports are available  
-#for p in ${ports[*]}
-#do
-#	sudo yunohost app checkport $ports
-#	if [[ ! $? -eq 0 ]]; then
-#  		exit 1
-#	fi
-#done
 
 # Remove trailing "/" for next commands and add user name path
 path=${path%/}
@@ -36,9 +25,9 @@ domain=${domain%/}
 sudo yunohost app checkurl $domain$path -a $app \
 	|| (echo "Path not available: $domain$path" && exit 1)
 
+dockerized=True
 #Test if yunohost is dockerized and install docker
-cat /proc/1/cgroup | grep -q docker
-if [ $? -lt 0 ]; then
+if [ ! -f /.dockerinit ]; then
 	
 	# Install Docker if it is not installed yet
 	if [ -f /usr/bin/docker ]; then
@@ -57,6 +46,16 @@ if [ $? -lt 0 ]; then
 	sudo service docker restart
 	#Symbolic link because there may be some problems to mount container volume with /var/run/docker.sock inside a container  
 	sudo ln -s /var/run/docker.sock /docker.sock
+	dockerized=Fales
+
+	# Check ports are available  
+	for p in ${ports[*]}
+	do
+	       	sudo yunohost app checkport $ports
+		if [[ ! $? -eq 0 ]]; then
+	               	exit 1
+	       	fi
+	done
 fi
 
 #Install pip if it is not installed yet
@@ -76,33 +75,46 @@ sudo mkdir -p /home/yunohost.docker/container-$app/$username/config/
 sudo mkdir -p /home/yunohost.docker/container-$app/$username/data/
 
 #Owncloud support or not
-if [ "$owncloud" = "Yes" ];
-then
-	for i in $(ls /home/yunohost.app/owncloud/data/)
-	do
-		sudo yunohost user list --json | grep -q "\"username\": \"$i\""
-		if [[ $? -eq 0 ]];
-		then
+if [ "$owncloud" = "Yes" ];then
+	sudo ls /home/yunohost.app/owncloud/data/ | grep -q $username
+	if [ $? -eq 0 ];then
 			datapath='/home/yunohost.app/owncloud/data/'$username'/files/'
-		fi
-	done	
+	else 
+		exit 1
+	fi
 else
 
 	datapath='/home/yunohost.docker/container-'$app'/'$username'/data/'
 fi
 
-
+redirectport=8888
+notredirectport=55555
+#Test ports if yunohost is not dockerized
+if [ ! $dockerized ];then
+        ports=(8888 55555)
+        for p in ${ports[*]}
+        do
+                sudo yunohost app checkport $p
+                if [[ ! $? -eq 0 ]]; then
+                        exit 1
+                fi
+        done
+	#Open non redirect port 
+	sudo yunohost firewall allow TCP $notredirectport
+	ip=127.0.0.1
+else
+	ip="$containername.bridge"
+fi
 
 #Create Docker container via python script
-echo "Start building container..."
-output=$(sudo python build_container.py $app $username $datapath $containername)
+echo "Start building container, please wait..."
+output=$(sudo python build_container.py $app $username $datapath $containername $(hostname) $dockerized)
 
 #Get info of container network (ip and external ports)
-ip=$(echo $output | cut -f2 -d,)
+#ip=$(echo $output | cut -f2 -d,)
 #ip=$(echo $ip | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}") #force ip format
-redirectport=$(echo $output | cut -f3 -d,)
-notredirectport=$(echo $output | cut -f4 -d,)
-
+#redirectport=$(echo $output | cut -f3 -d,)
+#notredirectport=$(echo $output | cut -f4 -d,)
 
 #Create init script for the container
 if [ -f /bin/systemd ]; then
@@ -119,9 +131,6 @@ else
 	sudo chmod 777 /etc/init.d/$containername
 	sudo update-rc.d $containername defaults
 fi
-sudo yunohost service add container-$containername
-
-
 
 # Add the redirection
 #sed -i "s@PATHTOCHANGE@$path@g" ../conf/nginx.conf)
@@ -132,9 +141,6 @@ sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$containername.conf
 sudo yunohost app setting $app user -v "$username"
 sudo yunohost app setting $app domain -v "$domain"
 sudo yunohost app setting $app path -v "$path"
-
-#Open non redirect port 
-sudo yunohost firewall allow TCP $notredirectport
 
 if [ "$is_public" = "Yes" ];
 then

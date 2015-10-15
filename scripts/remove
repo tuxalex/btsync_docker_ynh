@@ -11,8 +11,13 @@ sudo rm /etc/nginx/conf.d/$domain.d/$containername.conf
 
 # Remove container
 output=$(sudo python remove_container.py $app $containername)
-notredirectport=$(echo $output | cut -f4 -d,)
+
+#Close port with no redirection 
+#notredirectport=$(echo $output | cut -f4 -d,)
+notredirectport=55555
 sudo yunohost firewall disallow TCP $notredirectport
+
+#Remove nginx config
 sudo rm -rf /home/yunohost.docker/container-$app/config
 
 # Reload

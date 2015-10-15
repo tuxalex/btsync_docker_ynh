@@ -10,6 +10,8 @@ app=sys.argv[1]
 username=sys.argv[2]
 datapath=sys.argv[3]
 containername=sys.argv[4]
+yunohostid=sys.argv[5]
+dockerized=sys.argv[6]
 
 #Get the hostname
 hostname = socket.gethostname()
@@ -19,24 +21,24 @@ imagename = hostname+'/'+app
 cli = Client(base_url='unix://docker.sock')
 
 #Define port binding
-config=cli.create_host_config(port_bindings={8888: ('127.0.0.1',), 55555: ('127.0.0.1',)})
+#if dockerized:
+#	config=cli.create_host_config(network_mode='container:'+yunohostid)
+#else:
+#	config=cli.create_host_config(port_bindings={8888: ('127.0.0.1',8888), 55555: ('127.0.0.1',55555)})
 
+config=cli.create_host_config(port_bindings={8888: ('127.0.0.1',8888), 55555: ('0.0.0.0',55555)})
 #Build docker image with the Dockerfile and disply the output
-for line in cli.build(path='../build/', rm=True, tag=imagename):
+for line in cli.build(path='../build/', tag=imagename):
 	out = json.loads(line)
-	print(out['stream'])
-
-
-# TODO: Force stop and remove container with the same name
-#cli.stop(container=containername)
-#cli.remove_container(container=containername, force=True)
+	#sys.stdout.write('\r')
+	#print(out['stream'])
+	#sys.stdout.flush()
 
 #Create the container and display result
 container = cli.create_container(
-			image=imagename, 
-			detach=True,  
-			tty=True, 
-			volumes=[datapath+":/data", "/home/yunohost.docker/"+app+"/"+username+"/config:/opt/btsync"], 
+			image=imagename,  
+			tty=True,
+			volumes=[datapath+":/data", "/home/yunohost.docker/container-"+app+"/"+username+"/config:/opt/btsync"], 
 			name=containername,
 			host_config=config
 )		
@@ -46,8 +48,9 @@ cli.start(container=containername)
 
 details=cli.inspect_container(container=containername)
 #First print IP, then print redirect port, finaly print not redirect ports
-print(","+details['NetworkSettings']['IPAddress']
-      +","+details['NetworkSettings']['Ports']['8888/tcp'][0]['HostPort']
-      +","+details['NetworkSettings']['Ports']['55555/tcp'][0]['HostPort'])
+#print(","+details['NetworkSettings']['IPAddress']
+#      +",8888"
+#      +",55555")
+
 exit()
 
