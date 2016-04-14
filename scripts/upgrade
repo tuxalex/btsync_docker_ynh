@@ -1,3 +1,15 @@
 #!/bin/bash
+#platform=$(sudo yunohost app setting btsync platform)
+#sudo service btsync stop
+#sudo rm -f /etc/btsync
+#sudo wget --no-verbose -O btsync.tgz https://download-cdn.getsyncapp.com/stable/linux-x64/BitTorrent-Sync_x64.tar.gz
+#sudo tar -xzvf /tmp/btsync.tar.gz -C /tmp/
 
+#sudo cp /tmp/btsync /etc/btsync
+#sudo rm -f /tmp/btsync.tgz
+#sudo chmod +x /etc/btsync
+#sudo service btsync start
+
+#sudo service nginx reload
+#sudo yunohost app ssowatconf
 # TBD

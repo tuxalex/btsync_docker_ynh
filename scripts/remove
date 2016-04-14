@@ -1,5 +1,6 @@
 #!/bin/bash
 app=btsync_docker
+notredirectport=(55555)
 
 # Remove NGINX conf
 path=$(sudo yunohost app setting $app path)
@@ -14,11 +15,16 @@ output=$(sudo python remove_container.py $app $containername)
 
 #Close port with no redirection 
 #notredirectport=$(echo $output | cut -f4 -d,)
-notredirectport=55555
-sudo yunohost firewall disallow TCP $notredirectport
+if [ ! -f /.dockerinit ]; then
+  for nrp in ${notredirectport[*]}
+     do
+        sudo yunohost firewall allow TCP $nrp
+        sudo yunohost firewall allow UDP $nrp
+  done
+fi
 
-#Remove nginx config
-sudo rm -rf /home/yunohost.docker/container-$app/config
+#Remove config files
+#sudo rm -rf /home/yunohost.docker/container-$app/config
 
 # Reload
 sudo service nginx reload

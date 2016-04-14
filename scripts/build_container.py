@@ -4,6 +4,7 @@
 import json
 import socket
 import sys
+import re
 from docker import Client
 
 app=sys.argv[1]
@@ -21,24 +22,25 @@ imagename = hostname+'/'+app
 cli = Client(base_url='unix://docker.sock')
 
 #Define port binding
-#if dockerized:
-#	config=cli.create_host_config(network_mode='container:'+yunohostid)
-#else:
-#	config=cli.create_host_config(port_bindings={8888: ('127.0.0.1',8888), 55555: ('127.0.0.1',55555)})
+if dockerized:
+	config=cli.create_host_config(network_mode='container:'+yunohostid)
+else:
+	config=cli.create_host_config(port_bindings={8888/tcp: ('127.0.0.1',8888), 55555/tcp: ('127.0.0.1',55555)})
 
-config=cli.create_host_config(port_bindings={8888: ('127.0.0.1',8888), 55555: ('0.0.0.0',55555)})
 #Build docker image with the Dockerfile and disply the output
-for line in cli.build(path='../build/', tag=imagename):
+for line in cli.build(path='../build/', tag=imagename, rm=True):
 	out = json.loads(line)
 	#sys.stdout.write('\r')
 	#print(out['stream'])
 	#sys.stdout.flush()
 
 #Create the container and display result
+app_user=re.split("_",app)
+app_user=app_user[0]
 container = cli.create_container(
 			image=imagename,  
 			tty=True,
-			volumes=[datapath+":/data", "/home/yunohost.docker/container-"+app+"/"+username+"/config:/opt/btsync"], 
+			volumes=[datapath+":/home/"+app_user+"/data", "/home/yunohost.docker/container-"+app+"/"+username+"/config:/home/"+app_user+"/.config"], 
 			name=containername,
 			host_config=config
 )		
