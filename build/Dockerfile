@@ -1,41 +1,41 @@
 # VERSION 0.1
 # DESCRIPTION:    btsync server conatiner
 # TO_BUILD:       docker build -rm -t btsync .
-# TO_RUN:         docker run -d --name=btsync -i -t -p 8888:8888 -p 55555:55555 -v /PATHDATA/:/data/ -v /PATHCONFIG/:/opt/btsync IMAGENAME
+# TO_RUN:         docker run -d --name=btsync -i -t -p 8888:8888 -p 55555:55555 -v /PATHDATA/:/home/btsync/data -v /PATHCONFIG/:/home/btsync/.config IMAGENAME
 
 FROM ubuntu-debootstrap:14.04
 MAINTAINER : Alexan Andrieux <alexan.andrieux@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN useradd btsync -b /data --no-create-home
-
-RUN apt-get update
-RUN apt-get dist-upgrade -yq
-RUN apt-get install sudo tar curl -yq
-
-RUN mkdir -p /etc/btsync/
-RUN mkdir -p /opt/btsync/
+RUN useradd -m btsync
+RUN mkdir -p "/etc/btsync"
+RUN mkdir -p "/home/btsync/.config"
+RUN mkdir -p "/home/btsync/.config/btsync"
+RUN mkdir -p "/home/btsync/Sync"
+RUN apt-get update && apt-get install -qy --force-yes ca-certificates curl tar && apt-get clean
 
 WORKDIR /etc/btsync
 
-RUN apt-get update \
-    && apt-get -y upgrade \
-    && apt-get -y install tar curl ca-certificates wget \
-    && apt-get clean \
-    && curl -k -L https://download-cdn.getsyncapp.com/stable/linux-x64/BitTorrent-Sync_x64.tar.gz | tar zxv
+RUN set -x \
+    && curl -k -L https://download-cdn.getsyncapp.com/stable/linux-x64/BitTorrent-Sync_x64.tar.gz | tar zxv \
+    && mv ./btsync /sbin/btsync \
+    && rm ./BitTorrent-Sync_x64.tar.gz \
+    && ln -s /home/btsync/Sync /home/btsync/data
 
-RUN chown -R btsync:btsync /etc/btsync
 RUN ./btsync --dump-sample-config >> btsync.conf \
-    && mv -n ./btsync.conf /opt/btsync/btsync.conf
+    && mv -n ./btsync.conf ./home/btsync/.config/btsync.conf
 
-WORKDIR /
+RUN chown -R ntsync:btsync /home/btsync/
+RUN find /home/btsync/ -type f | while read LINE; do chmod 640 "$LINE" ; done
+RUN find /home/btsync/ -type d | while read LINE; do chmod 750 "$LINE" ; done
+
+WORKDIR /home/btsync/
+USER btsync
 
 EXPOSE 8888
 EXPOSE 55555
 
-VOLUME ["/opt/btsync"]
-VOLUME ["/data"]
+VOLUME ["/home/btsync/.config" "/home/btsync/data"]
 
-#CMD ["/etc/btsync/start.sh"]
-ENTRYPOINT ["/etc/btsync/btsync", "--config", "/opt/btsync/btsync.conf", "--nodaemon"]
+ENTRYPOINT ["/sbin/btsync", "--config", "/home/btsync/.config/btsync.conf", "--nodaemon"]

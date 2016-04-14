@@ -1,5 +1,5 @@
 {
-    "name": "Btsync_docker",
+    "name": "btsync_docker",
     "id": "btsync_docker",
     "description": {
         "en": "Build btsync app inside docker container for yunohost",

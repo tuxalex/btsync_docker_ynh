@@ -22,8 +22,15 @@ Docker-py has been used as a docker client to interact with docker thus this pac
 The first installation can take time, because docker download the base image and construct the ajenti image, so be patient.
 In yunohost this app will be installed with the name "btsync_docker"
 BitTorrent Sync doesn't support multi-user so this app is multi-instance, each user must have an install of this app to access to it. The first instance installed will be called "btsync_docker", after "__NUMBEROFINSTANCE" will be added to "btsync_docker" (Example: the secondary instance will be called "btsync_docker__2") 
-The package creates for each install a container with a name composed of "btsync" and the username concatened like btsyncUSERNAME. 
+The package creates for each install a container with a name composed of "btsync" and the username concatened like btsync_USERNAME. 
 
 Credit
 ------
 This work is based on Scith work : https://github.com/scith/redirect_ynh
+
+TODO
+----
+* Upgrade script
+* Backup script
+* Restore script
+* supervisor
