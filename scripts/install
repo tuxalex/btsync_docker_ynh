@@ -91,9 +91,18 @@ fi
 echo "Install or upgrade docker-py"
 sudo pip install docker-py --upgrade
 
-sudo mkdir -p /home/yunohost.docker/
-sudo mkdir -p /home/yunohost.docker/container-$app/$username
-sudo mkdir -p /home/yunohost.docker/container-$app/$username/config/
+#Create directories
+if [ ! -d /home/yunohost.docker/ ]; then
+   sudo mkdir -p /home/yunohost.docker/
+fi
+
+if [ ! -d /home/yunohost.docker/container-$app/$username/ ]; then
+   sudo mkdir -p /home/yunohost.docker/container-$app/$username/
+fi
+
+if [ ! -d /home/yunohost.docker/container-$app/$username/config/ ]; then
+   sudo mkdir -p /home/yunohost.docker/container-$app/$username/config/
+fi
 
 #Owncloud support or not
 if [ "$owncloud" = "Yes" ];then
@@ -104,7 +113,9 @@ if [ "$owncloud" = "Yes" ];then
 		exit 1
 	fi
 else
-        sudo mkdir -p /home/yunohost.docker/container-$app/$username/data/
+        if [ ! -d /home/yunohost.docker/container-$app/$username/data/ ]; then
+	    sudo mkdir -p /home/yunohost.docker/container-$app/$username/data/
+        fi
 	datapath='/home/yunohost.docker/container-'$app'/'$username'/data/'
 fi
 
