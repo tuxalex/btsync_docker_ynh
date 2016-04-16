@@ -20,11 +20,14 @@ if [[ ! $? -eq 0 ]]; then
 fi
 
 # Remove trailing "/" for next commands and add user name path
-path=${path%/}
-if ! $support_multiuser ; then
-        path=$path_$username
+if $support_multiuser; then
+        path=${path%/}
+else
+        echo "Add username to path"
+        path=${path%/}_$username
 fi
-containername=${path#/}
+
+containername=${path#/}_$username
 
 # Check domain/path availability
 domain=${domain%/}
@@ -54,15 +57,27 @@ if [ ! -f /.dockerinit ]; then
 	sudo ln -s /var/run/docker.sock /docker.sock
 	dockerized=Fales
 
-	# Check ports are available  
-	for p in ${ports[*]}
-	do
-	       	sudo yunohost app checkport $ports
-		if [[ ! $? -eq 0 ]]; then
-	               	exit 1
-	       	fi
-	done
+        #Only one port is redirect by nginx (http or https port), test if this port is available
+        sudo yunohost app checkport $redirectport
+        if [[ ! $? -eq 0 ]]; then
+              exit 1
+        fi
+
+        #Multiple ports can be open and not redirecting by nginx, test if those ports are available and open it
+        for nrp in ${notredirectport[*]}
+        do
+                sudo yunohost app checkport $nrp
+                if [[ ! $? -eq 0 ]]; then
+                        exit 1
+                fi
+                #Open non redirect port 
+                sudo yunohost firewall allow TCP $nrp
+                sudo yunohost firewall allow UDP $nrp
+
+        done
+
 fi
+
 
 #Install pip if it is not installed yet
 if [ -f /usr/bin/pip ]; then
@@ -91,29 +106,6 @@ if [ "$owncloud" = "Yes" ];then
 else
         sudo mkdir -p /home/yunohost.docker/container-$app/$username/data/
 	datapath='/home/yunohost.docker/container-'$app'/'$username'/data/'
-fi
-
-#Test ports if yunohost is not dockerized
-if  [ ! $dockerized ];then
-
-        #Only one port is redirect by nginx
-        sudo yunohost app checkport $redirectport
-        if [[ ! $? -eq 0 ]]; then
-              exit 1
-        fi
-
-        #Multiple ports can be open and not redirecting by nginx
-        for nrp in ${notredirectport[*]}
-        do
-                sudo yunohost app checkport $nrp
-                if [[ ! $? -eq 0 ]]; then
-                        exit 1
-                fi
-                #Open non redirect port 
-                sudo yunohost firewall allow TCP $nrp
-                sudo yunohost firewall allow UDP $nrp
-
-        done
 fi
 
 #Create Docker container via python script
